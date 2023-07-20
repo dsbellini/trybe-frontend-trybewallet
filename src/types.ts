@@ -51,7 +51,7 @@ export type ExpensesType = {
   method: string,
   tag: string,
   description: string,
-  exchangeRates: object,
+  exchangeRates: object | any,
 };
 
 export type Dispatch = ThunkDispatch<ReduxState, void, AnyAction>;

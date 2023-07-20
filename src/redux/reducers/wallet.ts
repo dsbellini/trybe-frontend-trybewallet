@@ -1,7 +1,7 @@
 // Esse reducer será responsável por tratar o todas as informações relacionadas as despesas
 
 import { AnyAction } from 'redux';
-import { REQUEST_SUCCESSFUL } from '../actions';
+import { PUT_EXPENSE, REQUEST_SUCCESSFUL } from '../actions';
 
 const INITIAL_STATE = {
   currencies: [], // array de string
@@ -17,7 +17,7 @@ export default function walletRedux(state = INITIAL_STATE, action: AnyAction) {
         ...state,
         currencies: action.payload,
       };
-    case 'PUT_EXPENSE':
+    case PUT_EXPENSE:
       return {
         ...state,
         expenses: [...state.expenses, action.payload],

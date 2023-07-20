@@ -1,21 +1,17 @@
-import { CurrencyState, Dispatch, ExpensesType, UserState } from '../../types';
+import { Dispatch, ExpensesType, UserState } from '../../types';
 
 // ACTION TYPES
 export const PUT_EMAIL = 'PUT_EMAIL';
 export const REQUEST_STARTED = 'REQUEST_STARTED';
 export const REQUEST_SUCCESSFUL = 'REQUEST_SUCCESSFUL';
 export const REQUEST_FAILED = 'REQUEST_FAILED';
+export const PUT_EXPENSE = 'PUT_EXPENSE';
 
 // ACTION CREATORS
 
 export const putEmail = (email: UserState) => ({
   type: PUT_EMAIL,
   payload: email,
-});
-
-export const putExpenses = (expenses: ExpensesType) => ({
-  type: 'PUT_EXPENSE',
-  payload: expenses,
 });
 
 function requestStarted() {
@@ -38,7 +34,7 @@ function requestFailed(error: string) {
 
 function addExpense(expense: ExpensesType) {
   return {
-    type: 'PUT_EXPENSE',
+    type: PUT_EXPENSE,
     payload: expense,
   };
 }
@@ -50,9 +46,10 @@ export function fetchCurrencies() {
       dispatch(requestStarted());
       const response = await fetch('https://economia.awesomeapi.com.br/json/all');
       const data = await response.json();
+      delete data.USDT;
 
       const currencies = Object.keys(data)
-        .filter((currency) => currency !== 'USDT');
+        .map((currency) => currency);
 
       dispatch(requestSuccessful(currencies));
     } catch (error) {

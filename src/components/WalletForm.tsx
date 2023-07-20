@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AllState, Dispatch, ExpensesType } from '../types';
-import { fetchCurrencyRate, fetchCurrencies,
-  putExpenses } from '../redux/actions';
+import { fetchCurrencyRate, fetchCurrencies } from '../redux/actions';
 
 const INITIAL_STATE = {
   id: 0,
   value: '',
-  currency: '',
-  method: '',
+  currency: 'USD',
+  method: 'Dinheiro',
   tag: '',
   description: '',
   exchangeRates: {},
@@ -36,7 +35,7 @@ function WalletForm() {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement> |
   React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = event.target;
-    setExpense((prevForm) => ({ ...prevForm, [name]: value }));
+    setExpense(() => ({ ...expense, [name]: value }));
   };
 
   const handleTagChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -53,7 +52,7 @@ function WalletForm() {
     setExpensesList((prevList) => [...prevList, newExpense]);
     dispatch(fetchCurrencyRate(newExpense));
     // dispatch(putExpenses(newExpense));
-    console.log(expensesList);
+    console.log(newExpense);
 
     setExpense(INITIAL_STATE);
     setSelectedTag('');

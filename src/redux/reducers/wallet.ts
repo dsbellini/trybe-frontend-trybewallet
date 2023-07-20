@@ -17,6 +17,11 @@ export default function walletRedux(state = INITIAL_STATE, action: AnyAction) {
         ...state,
         currencies: action.payload,
       };
+    case 'PUT_EXPENSE':
+      return {
+        ...state,
+        expenses: [...state.expenses, action.payload],
+      };
     default:
       return state;
   }

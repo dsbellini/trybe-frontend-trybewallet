@@ -1,4 +1,4 @@
-import { Dispatch, UserState } from '../../types';
+import { CurrencyState, Dispatch, ExpensesType, UserState } from '../../types';
 
 // ACTION TYPES
 export const PUT_EMAIL = 'PUT_EMAIL';
@@ -11,6 +11,11 @@ export const REQUEST_FAILED = 'REQUEST_FAILED';
 export const putEmail = (email: UserState) => ({
   type: PUT_EMAIL,
   payload: email,
+});
+
+export const putExpenses = (expenses: ExpensesType) => ({
+  type: 'PUT_EXPENSE',
+  payload: expenses,
 });
 
 function requestStarted() {
@@ -31,6 +36,13 @@ function requestFailed(error: string) {
   };
 }
 
+function addExpense(expense: ExpensesType) {
+  return {
+    type: 'PUT_EXPENSE',
+    payload: expense,
+  };
+}
+
 // Função para fazer a requisição à API e retornar os dados das moedas
 export function fetchCurrencies() {
   return async (dispatch: Dispatch) => {
@@ -45,6 +57,26 @@ export function fetchCurrencies() {
       dispatch(requestSuccessful(currencies));
     } catch (error) {
       dispatch(requestFailed('Erro de fetch'));
+    }
+  };
+}
+
+export function fetchCurrencyRate(expense: ExpensesType) {
+  return async (dispatch: Dispatch) => {
+    try {
+      const response = await fetch('https://economia.awesomeapi.com.br/json/all');
+
+      const data = await response.json();
+      delete data.USDT;
+
+      const exchangeRates = {
+        ...expense,
+        exchangeRates: data,
+      };
+
+      dispatch(addExpense(exchangeRates));
+    } catch (error) {
+      console.error('Erro de requisição(fetch):');
     }
   };
 }

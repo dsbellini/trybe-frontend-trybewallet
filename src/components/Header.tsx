@@ -1,8 +1,11 @@
 import { useSelector } from 'react-redux';
-import { ReduxState } from '../types';
+import { AllState, ExpensesType, ReduxState, WalletState } from '../types';
 
 function Header() {
   const userData = useSelector((state: ReduxState) => state);
+
+  const expenses = useSelector((state:AllState) => state.wallet.expenses);
+
   return (
     <header>
       <h4 data-testid="email-field">

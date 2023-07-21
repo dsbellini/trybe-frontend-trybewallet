@@ -1,3 +1,8 @@
+body {
+  background-color: #282c34;
+  color: white;
+}
+
 .App {
   text-align: center;
 }
@@ -22,7 +27,7 @@
   flex-direction: column;
   font-size: calc(10px + 2vmin);
   justify-content: center;
-  min-height: 100vh;
+  /* min-height: 0vh; */
 }
 
 .App-link {

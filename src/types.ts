@@ -54,4 +54,25 @@ export type ExpensesType = {
   exchangeRates: object | any,
 };
 
+export type TableType = {
+  id: number,
+  value: string,
+  currency: string,
+  method: string,
+  tag: string,
+  description: string,
+  exchangeRates: object | any,
+  code: string;
+  codein: string;
+  name: string;
+  high: string;
+  low: string;
+  varBid: string;
+  pctChange: string;
+  bid: string;
+  ask: string;
+  timestamp: string;
+  create_date: string;
+};
+
 export type Dispatch = ThunkDispatch<ReduxState, void, AnyAction>;

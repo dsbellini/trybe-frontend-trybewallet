@@ -51,8 +51,6 @@ function WalletForm() {
 
     setExpensesList((prevList) => [...prevList, newExpense]);
     dispatch(fetchCurrencyRate(newExpense));
-    // dispatch(putExpenses(newExpense));
-    console.log(newExpense);
 
     setExpense(INITIAL_STATE);
     setSelectedTag('');

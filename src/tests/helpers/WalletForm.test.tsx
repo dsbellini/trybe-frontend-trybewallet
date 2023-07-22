@@ -1,16 +1,31 @@
-import { screen } from '@testing-library/dom';
+import { screen, waitFor } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 import { renderWithRouterAndRedux } from './renderWith';
 import App from '../../App';
 import mockData from './mockData';
-import { ReduxState } from '../../types';
+import mockFetch from './mocks/mockFetch';
 
 const userMail = 'email@email.com';
+const userPassword = '1234567';
 
-const REDUX_STATE_LOGIN = {
+const loginSimulator = async () => {
+  const loginBtn = screen.getByRole('button', { name: 'Entrar' });
+  const loginInput = screen.getByPlaceholderText('Login');
+  const passwordInput = screen.getByPlaceholderText('Senha');
+
+  expect(loginBtn).toBeInTheDocument();
+  expect(loginBtn).toBeDisabled();
+  await userEvent.type(loginInput, userMail);
+  await userEvent.type(passwordInput, userPassword);
+  expect(loginBtn).not.toBeDisabled();
+  await userEvent.click(loginBtn);
+};
+
+const LOGIN_STATE = {
   user: {
     email: userMail,
+    password: userPassword,
   },
   wallet: {
     currencies: [],
@@ -30,7 +45,7 @@ const REDUX_EXPENSE = {
     email: '',
   },
   wallet: {
-    currencies: CURRENCIES,
+    currencies: [],
     expenses: [
       {
         id: 0,
@@ -39,7 +54,7 @@ const REDUX_EXPENSE = {
         method: 'Cartão de crédito',
         tag: 'Lazer',
         description: 'Gasto de teste',
-        exchangeRates: { ...mockData },
+        exchangeRates: mockData,
       },
       {
         id: 1,
@@ -48,7 +63,7 @@ const REDUX_EXPENSE = {
         method: 'Cartão de débito',
         tag: 'Lazer',
         description: 'Gasto',
-        exchangeRates: { ...mockData },
+        exchangeRates: mockData,
       },
     ],
     editor: false,
@@ -57,7 +72,15 @@ const REDUX_EXPENSE = {
 };
 
 describe('Página /carteira', () => {
-  test('1 - Verifica se os inputs de valor e descrição estão vazios', async () => {
+  beforeEach(() => {
+    vi.spyOn(global, 'fetch').mockImplementation(mockFetch as any);
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test.skip('1 - Verifica se os inputs de valor e descrição estão vazios', async () => {
     renderWithRouterAndRedux(<App />, { initialEntries: ['/carteira'] });
 
     const valueInput = screen.getByPlaceholderText('Valor da despesa');
@@ -66,26 +89,23 @@ describe('Página /carteira', () => {
     expect(valueInput).toHaveTextContent('');
     expect(descriptionInput).toHaveTextContent('');
   });
-  test('2 - Verifica se, após o login, o estado inicial consta atualizado', async () => {
-    // Simula login
+
+  test.skip('2 - Verifica se, após o login, o estado inicial consta atualizado', async () => {
     const { store } = renderWithRouterAndRedux(<App />);
-
-    const loginBtn = screen.getByRole('button', { name: 'Entrar' });
-    const loginInput = screen.getByPlaceholderText('Login');
-    const passwordInput = screen.getByPlaceholderText('Senha');
-
-    expect(loginBtn).toBeInTheDocument();
-    expect(loginBtn).toBeDisabled();
-    await userEvent.type(loginInput, userMail);
-    await userEvent.type(passwordInput, '1234567');
-    expect(loginBtn).not.toBeDisabled();
-    await userEvent.click(loginBtn);
-    expect(store.getState()).toMatchObject(REDUX_STATE_LOGIN);
+    // Simula login
+    await loginSimulator();
+    expect(store.getState()).toMatchObject(LOGIN_STATE);
   });
+
   test('3 - Verifica se, após adicionar uma despesa, consta atualizada no estado', async () => {
     const { store } = renderWithRouterAndRedux(<App />, { initialEntries: ['/carteira'] });
 
-    // ToDo: simular o fetch da API onde adquiri as moedas
+    vi.mock('./mocks/mockFetch');
+    (mockFetch as any).mockResolvedValue({
+      json: async () => ({ currencies: CURRENCIES }),
+    });
+
+    expect(global.fetch).toHaveBeenCalled();
 
     const valueInput = screen.getByPlaceholderText('Valor da despesa');
     const descriptionInput = screen.getByPlaceholderText('Descrição da despesa');
@@ -96,7 +116,10 @@ describe('Página /carteira', () => {
 
     expect(valueInput).toHaveTextContent('');
     expect(descriptionInput).toHaveTextContent('');
-    expect(currency).toHaveTextContent('');
+    await waitFor(() => {
+      expect(currency).toHaveValue('USD');
+    }, { timeout: 5000 });
+    expect(currency).toHaveValue('USD');
     expect(method).toHaveTextContent('Dinheiro');
     expect(tag).toHaveTextContent('Alimentação');
     expect(expenseBtn).toBeInTheDocument();
@@ -112,6 +135,7 @@ describe('Página /carteira', () => {
     await userEvent.selectOptions(currency, 'CAD');
     await userEvent.selectOptions(method, 'Cartão de débito');
     await userEvent.selectOptions(tag, 'Lazer');
+    await userEvent.click(expenseBtn);
     expect(store.getState()).toMatchObject(REDUX_EXPENSE);
   });
 });

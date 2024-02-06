@@ -2,6 +2,7 @@
 
 import { AnyAction } from 'redux';
 import { PUT_EXPENSE, REQUEST_SUCCESSFUL } from '../actions';
+import { ExpensesType } from '../../types';
 
 const INITIAL_STATE = {
   currencies: [], // array de string
@@ -22,6 +23,13 @@ export default function walletRedux(state = INITIAL_STATE, action: AnyAction) {
         ...state,
         expenses: [...state.expenses, action.payload],
       };
+    case 'DELETE_EXPENSE':
+      action.payload as string;
+      return ({
+        ...state,
+        expenses: state.expenses.filter((expense: ExpensesType) => expense
+          .id !== action.payload),
+      });
     default:
       return state;
   }

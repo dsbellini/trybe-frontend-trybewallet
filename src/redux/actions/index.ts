@@ -39,6 +39,28 @@ function addExpense(expense: ExpensesType) {
   };
 }
 
+// Ação para excluir uma despesa pelo ID
+export const removeExpense = (expenseId: number) => {
+  return {
+    type: 'DELETE_EXPENSE',
+    payload: expenseId,
+  };
+};
+
+export const removeExpenseError = () => ({
+  type: 'REMOVE_EXPENSE_ERROR',
+});
+
+export const deleteExpense = (expenseId: number) => {
+  return async (dispatch: Dispatch) => {
+    try {
+      dispatch(removeExpense(expenseId));
+    } catch (error) {
+      dispatch(removeExpenseError());
+    }
+  };
+};
+
 // Função para fazer a requisição à API e retornar os dados das moedas
 export function fetchCurrencies() {
   return async (dispatch: Dispatch) => {

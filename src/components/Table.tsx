@@ -1,13 +1,20 @@
 import { useSelector } from 'react-redux';
+// import { useState } from 'react';
 import { ReduxState, TableType } from '../types';
+// import { deleteExpense } from '../redux/actions';
 
 function Table() {
   const expenses = useSelector((state: ReduxState) => state.wallet.expenses);
+  // const [deleteExpense, setDeletExpense] = useState();
 
   // Função para formatar um valor para o formato pedido no readme -> 0.00
   const toFixedFunction = (value: number) => {
     return value.toFixed(2);
   };
+
+  // const handleClick = (expenseId: number) => {
+  //   dispatch(deleteExpense(expenseId));
+  // };
 
   return (
     <table>
@@ -43,7 +50,13 @@ function Table() {
             <td>Real</td>
             <td>
               <button>Edit</button>
-              <button>Delete</button>
+              <button
+                data-testid="delete-btn"
+                // onClick={ () => handleClick(expense.id) }
+              >
+                Delete
+
+              </button>
             </td>
           </tr>
         ))}
@@ -53,3 +66,6 @@ function Table() {
 }
 
 export default Table;
+// function dispatch(arg0: (dispatch: import('../types').Dispatch) => Promise<void>) {
+//   throw new Error('Function not implemented.');
+// }
